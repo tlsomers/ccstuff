@@ -35,7 +35,7 @@ function statusline.redraw()
     lineTerm.write(str)
   end
   lineTerm.write("|")
-  mainTerm.restoreCursor()
+  shellTerm.restoreCursor()
 end
 
 function statusline.clear()
