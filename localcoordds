@@ -26,7 +26,7 @@ function writeGPS()
   file.writeLine(tostring(x))
   file.writeLine(tostring(y))
   file.writeLine(tostring(z))
-  file.writeLine(tostring(dir)
+  file.writeLine(tostring(dir))
   file.close()
 end
 
