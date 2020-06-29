@@ -1,0 +1,43 @@
+
+local mainTerm = _G.term
+
+local mainW, mainH = mainTerm.getSize()
+local shellTerm = window.create(mainTerm, 1, 1, mainW, mainH - 1)
+_G.term = shellTerm
+
+local lineTerm = window.create(mainTerm, 1, mainH, mainW, 1)
+
+local statusline = {}
+_G.statusline = statusline
+
+local i = 1
+function statusline.redraw()
+  lineTerm.clear()
+  lineTerm.setCursorPos(1,1)
+  lineTerm.write(i)
+  i += 1
+  mainTerm.restoreCursor()
+end
+
+local oldHandler = _G.mainProgram
+
+function _G.mainProgram()
+  local mainRoutine = coroutine.create(mainProgram)
+  local mainTimer = os.startTimer(1)
+
+  local yieldWith = nil
+
+  os.queueEvent("startMain")
+  while coroutine.status(mainRoutine) ~= "dead" do
+    local event = {coroutine.yield(yieldWith)}
+    if event[1] == "startMain" then
+      yieldWith = coroutine.resume(mainRoutine)
+    elseif event[1] == "timer" and event[2] == mainTimer then
+      statusline.redraw()
+      mainTimer = os.startTimer(1)
+      yieldWith = nil
+    else
+      yieldWith = coroutine.resume(mainRoutine, unpack(event))
+    end
+  end
+end
