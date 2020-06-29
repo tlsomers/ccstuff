@@ -1,0 +1,61 @@
+
+local oldTurtle = _G.turtle
+
+local turtle = setmetadata({}, {__index=oldTurtle})
+
+local x = nil
+local y = nil
+local z = nil
+
+local dir = 0
+
+-- North (0): -z
+-- East (1): +x
+-- South (2) +z
+-- West (3) -x
+
+if not fs.isDir(".config") then
+  fs.makeDir(".config")
+end
+
+local gpsFile = ".config/gps"
+
+function writeGPS()
+  local file = fs.open(gpsFile, "w")
+  file.writeLine(tostring(x))
+  file.writeLine(tostring(y))
+  file.writeLine(tostring(z))
+  file.writeLine(tostring(dir)
+  file.close()
+end
+
+if fs.exists(gpsFile) then
+  local file = fs.open(gpsFile, "r")
+  x = tonumber(file.readLine())
+  y = tonumber(file.readLine())
+  z = tonumber(file.readLine())
+  dir = tonumber(file.readLine())
+  file.close()
+else
+  print("x: ")
+  x = tonumber(read())
+  print("y: ")
+  y = tonumber(read())
+  print("z: ")
+  z = tonumber(read())
+  print("dir: ")
+  dir = tonumber(read())
+  writeGPS()
+end
+
+function oldTurtle.facing()
+    if dir == 0 then
+        return 0, -1
+    else if dir == 1 then
+        return 1, 0
+    else if dir == 2 then
+        return 0, 1
+    else
+        return -1, 0
+    end
+end
