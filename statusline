@@ -26,7 +26,7 @@ function statusline.redraw()
     local tpe = type(block)
     if tpe == "function" then
       str = block()
-    elseif tpe = "string" then
+    elseif tpe == "string" then
       str = block
     else
       str = tostring(block)
