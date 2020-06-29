@@ -1,0 +1,16 @@
+if fs.exists(".config/updatable") then
+  local file = fs.open(".config/updatable")
+  while true do
+    local line = file.readLine()
+    if not line then
+      break
+    end
+
+    local path, link = line:match("(.*);(.*)")
+    if path and link then
+      if fs.exists(path) then fs.delete(path) end
+      shell.run("wget", link, path)
+    end
+  end
+  file.close()
+end
