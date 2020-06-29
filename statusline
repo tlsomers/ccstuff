@@ -1,5 +1,5 @@
 
-local mainTerm = _G.term
+local mainTerm = _G.term.current()
 
 local mainW, mainH = mainTerm.getSize()
 local shellTerm = window.create(mainTerm, 1, 1, mainW, mainH - 1)
