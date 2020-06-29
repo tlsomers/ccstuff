@@ -3,7 +3,7 @@ local mainTerm = _G.term.current()
 
 local mainW, mainH = mainTerm.getSize()
 local shellTerm = window.create(mainTerm, 1, 1, mainW, mainH - 1)
-_G.term = shellTerm
+_G.term.redirect(shellTerm)
 
 local lineTerm = window.create(mainTerm, 1, mainH, mainW, 1)
 
@@ -15,29 +15,17 @@ function statusline.redraw()
   lineTerm.clear()
   lineTerm.setCursorPos(1,1)
   lineTerm.write(i)
-  i = i +1
+  i = i + 1
   mainTerm.restoreCursor()
 end
 
 local oldHandler = _G.mainProgram
 
 function _G.mainProgram()
-  local mainRoutine = coroutine.create(oldHandler)
-  local mainTimer = os.startTimer(1)
-
-  local yieldWith = nil
-
-  os.queueEvent("startMain")
-  while coroutine.status(mainRoutine) ~= "dead" do
-    local event = {coroutine.yield(yieldWith)}
-    if event[1] == "startMain" then
-      yieldWith = coroutine.resume(mainRoutine)
-    elseif event[1] == "timer" and event[2] == mainTimer then
-      statusline.redraw()
-      mainTimer = os.startTimer(1)
-      yieldWith = nil
-    else
-      yieldWith = coroutine.resume(mainRoutine, unpack(event))
-    end
-  end
+    parallel.WaitForAny(oldHandler, function()
+      while true do
+        statusline.redraw()
+        os.sleep(1)
+      end
+    end)
 end
