@@ -16,6 +16,15 @@ function statusline.add(block)
     statusline.blocks[#statusline.blocks+1] = block
 end
 
+function statusline.loadConfig()
+  statusline.clear()
+  if not fs.exists("/.config/statusline") then
+    statusline.add("Cannot find config (/.config/statusline)")
+  else
+    os.run({statusline = statusline, newBlock = statusline.add}, "/.config/statusline")
+  end
+end
+
 function statusline.redraw()
   lineTerm.clear()
   lineTerm.setCursorPos(1,1)
@@ -49,6 +58,7 @@ local oldHandler = _G.mainProgram
 
 function _G.mainProgram()
     parallel.waitForAny(oldHandler, function()
+      statusline.loadConfig()
       while true do
         statusline.redraw()
         os.sleep(1)
