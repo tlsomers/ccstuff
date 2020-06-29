@@ -22,7 +22,7 @@ end
 local oldHandler = _G.mainProgram
 
 function _G.mainProgram()
-  local mainRoutine = coroutine.create(mainProgram)
+  local mainRoutine = coroutine.create(oldHandler)
   local mainTimer = os.startTimer(1)
 
   local yieldWith = nil
