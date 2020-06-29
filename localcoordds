@@ -60,3 +60,77 @@ function turtle.facing()
         return -1, 0
     end
 end
+
+function turtle.up(n)
+  if not n then n = 1 end
+  local good, msg = nil, nil
+  for i = 1, n do
+    good, msg = oldTurtle.up()
+    if not good then
+      break
+    end
+    y = y + 1
+  end
+  writeGPS()
+  return good, msg
+end
+
+function turtle.down(n)
+  if not n then n = 1 end
+  local good, msg = nil, nil
+  for i = 1, n do
+    good, msg = oldTurtle.down()
+    if not good then
+      break
+    end
+    y = y - 1
+  end
+  writeGPS()
+  return good, msg
+end
+
+function turtle.forward(n)
+  if not n then n = 1 end
+  local dx, dz = turtle.facing()
+  local good, msg = nil, nil
+  for i = 1, n do
+    good, msg = oldTurtle.forward()
+    if not good then
+      break
+    end
+    x = x + dx
+    z = z + dz
+  end
+  writeGPS()
+  return good, msg
+end
+
+function turtle.back(n)
+  if not n then n = 1 end
+  local dx, dz = turtle.facing()
+  local good, msg = nil, nil
+  for i = 1, n do
+    good, msg = oldTurtle.back()
+    if not good then
+      break
+    end
+    x = x - dx
+    z = z - dz
+  end
+  writeGPS()
+  return good, msg
+end
+
+function turtle.turnLeft()
+  oldTurtle.turnLeft()
+  dir = dir - 1
+  if dir == -1 then dir = 3 end
+  writeGPS()
+end
+
+function turtle.turnRight()
+  oldTurtle.turnRight()
+  dir = dir + 1
+  if dir == 4 then dir = 0 end
+  writeGPS()
+end
