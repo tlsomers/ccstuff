@@ -34,7 +34,9 @@ function statusline.redraw()
 
     lineTerm.write(str)
   end
-  lineTerm.write("|")
+  if #statusline.blocks > 0 then
+    lineTerm.write("|")
+  end
   shellTerm.restoreCursor()
 end
 
