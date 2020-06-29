@@ -52,9 +52,9 @@ end
 function oldTurtle.facing()
     if dir == 0 then
         return 0, -1
-    else if dir == 1 then
+    elseif dir == 1 then
         return 1, 0
-    else if dir == 2 then
+    elseif dir == 2 then
         return 0, 1
     else
         return -1, 0
