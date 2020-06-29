@@ -1,7 +1,7 @@
 
 local oldTurtle = _G.turtle
 
-local turtle = setmetadata({}, {__index=oldTurtle})
+local turtle = setmetatable({}, {__index=oldTurtle})
 _G.turtle = turtle
 
 local x = nil
@@ -133,4 +133,13 @@ function turtle.turnRight()
   dir = dir + 1
   if dir == 4 then dir = 0 end
   writeGPS()
+end
+
+function turtle.position()
+  return x, y, z
+end
+
+function turtle.cardinal()
+  local cardinals = {[0] = "North", [1] = "East", [2] = "South", [3] = "West"}
+  return cardinals[dir]
 end
