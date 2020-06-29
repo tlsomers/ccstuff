@@ -2,6 +2,7 @@
 local oldTurtle = _G.turtle
 
 local turtle = setmetadata({}, {__index=oldTurtle})
+_G.turtle = turtle
 
 local x = nil
 local y = nil
