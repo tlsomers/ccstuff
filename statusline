@@ -22,7 +22,7 @@ end
 local oldHandler = _G.mainProgram
 
 function _G.mainProgram()
-    parallel.WaitForAny(oldHandler, function()
+    parallel.waitForAny(oldHandler, function()
       while true do
         statusline.redraw()
         os.sleep(1)
