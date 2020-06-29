@@ -10,13 +10,37 @@ local lineTerm = window.create(mainTerm, 1, mainH, mainW, 1)
 local statusline = {}
 _G.statusline = statusline
 
-local i = 1
+statusline.blocks = {}
+
+function statusline.add(block)
+    statusline.blocks[#statusline.blocks+1] = block
+end
+
 function statusline.redraw()
   lineTerm.clear()
   lineTerm.setCursorPos(1,1)
-  lineTerm.write(i)
-  i = i + 1
+  for i,block in pairs(statusline.blocks) do
+    lineTerm.write("|")
+
+    local str = ""
+    local tpe = type(block)
+    if tpe == "function" then
+      str = block()
+    elseif tpe = "string" then
+      str = block
+    else
+      str = tostring(block)
+    end
+
+    lineTerm.write(str)
+  end
+  lineTerm.write("|")
   mainTerm.restoreCursor()
+end
+
+function statusline.clear()
+  statusline.blocks = {}
+  statusline.redraw()
 end
 
 local oldHandler = _G.mainProgram
