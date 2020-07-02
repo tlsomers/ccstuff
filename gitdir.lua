@@ -3,14 +3,22 @@ local repo = "ccstuff"
 
 local gitfs = {}
 
-function http.getJSON(...)
-  local req, err = http.get(...)
-  if req then
-    local result = textutils.unserializeJSON(req.readAll())
-    req.close()
-    return result, err
+
+
+local cache = {}
+function http.getJSON(link, ...)
+  if cache[link] and cache[link].time > os.clock() - 5 then
+    return cache[link].response
   else
-    return req, err
+    local req, err = http.get(link, ...)
+    if req then
+      local result = textutils.unserializeJSON(req.readAll())
+      req.close()
+      cache[link] = {response = result, time = os.clock()}
+      return result, err
+    else
+      return req, err
+    end
   end
 end
 

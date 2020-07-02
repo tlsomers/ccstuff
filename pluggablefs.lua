@@ -8,7 +8,7 @@ function clean(path)
   return oldfs.combine(path, "")
 end
 
-function oldfs.mount(path, mount)
+function fs.mount(path, mount)
   path = oldfs.combine(path, "")
   if not oldfs.isDir(path) then
     error("Must mount in dir")
