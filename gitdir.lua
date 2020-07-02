@@ -43,6 +43,7 @@ function gitfs.list(_, path)
 end
 
 function gitfs.isDir(fs, path)
+  if path == "" then return true end
   local parent = fs.getDir(path)
   local link = "https://api.github.com/repos/"..user.."/"..repo.."/contents/"..parent
   local req, err = http.getJSON(link)
@@ -52,6 +53,22 @@ function gitfs.isDir(fs, path)
   for _,v in pairs(req) do
     if v.name == fs.getName(path) then
       return v.type == "dir"
+    end
+  end
+  return false
+end
+
+function gitfs.exists(fs, path)
+  if path == "" then return true end
+  local parent = fs.getDir(path)
+  local link = "https://api.github.com/repos/"..user.."/"..repo.."/contents/"..parent
+  local req, err = http.getJSON(link)
+  if not req then
+    return false
+  end
+  for _,v in pairs(req) do
+    if v.name == fs.getName(path) then
+      return true
     end
   end
   return false
