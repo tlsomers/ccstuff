@@ -22,7 +22,7 @@ end
 function getMount(path)
   path = clean(path)
   for i,v in pairs(mounts) do
-    if path:sub(1,#i) == i then
+    if path == i or path:sub(1,#i+1) == i .. "/" then
       return {fs = v, path = path:sub(#i + 1), mount = i}
     end
   end

@@ -1,12 +1,14 @@
-local user = read()
-local repo = read()
+local user = "tlsomers"
+local repo = "ccstuff"
 
 local gitfs = {}
 
 function http.getJSON(...)
-  local req, err = http.get(link)
+  local req, err = http.get(...)
   if req then
-    return textutils.unserializeJSON(req), err
+    local result = textutils.unserializeJSON(req.readAll())
+    req.close()
+    return result, err
   else
     return req, err
   end
@@ -30,3 +32,5 @@ function gitfs.list(_, path)
     return items
   end
 end
+
+fs.mount("git", gitfs)
