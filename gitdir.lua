@@ -36,7 +36,7 @@ function gitfs.list(_, path)
   else
     local items = {}
     for _,v in pairs(req) do
-      items[#items+1] = v.path
+      items[#items+1] = v.name
     end
     return items
   end
@@ -120,7 +120,11 @@ function gitfs.open(fs, path, mode)
       if not r2 then
         return nil, path..": Cannot open file"
       else
-        return r2
+        local file = fs.open(fs.combine("git",path), "w")
+        file.write(r2.readAll())
+        file.close()
+        r2.close()
+        return fs.open(fs.combine("git", path), "r")
       end
     end
   end
