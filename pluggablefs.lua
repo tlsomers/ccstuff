@@ -35,7 +35,6 @@ function tryMount(func)
     if mount and mount.fs[func] then
       return mount.fs[func](oldfs, mount.path, ...)
     else
-      print("Fallback: "..func)
       return oldfs[func](path, ...)
     end
   end
