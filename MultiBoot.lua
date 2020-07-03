@@ -13,7 +13,7 @@ function promptYN(text)
   end
 end
 
-local funtion getRawFile(link, path)
+local function getRawFile(link, path)
   local file = fs.open(path, "w")
   local handle, err = http.get(link)
   if handle then
