@@ -42,9 +42,11 @@ if not fs.exists(".multiboot") then
   print("Downloading bios")
   getRawFile("https://raw.githubusercontent.com/SquidDev-CC/CC-Tweaked/7b2d4823879a6db77bb99fc2e8605e9e54a0d361/src/main/resources/data/computercraft/lua/bios.lua", ".multiboot/bios.lua")
 
+  print("Downloading LuaDash")
+  getRawFile("https://raw.githubusercontent.com/tmpim/luadash/master/library.lua", ".multiboot/luadash.lua")
+
   print("Downloading MultiBoot")
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/MultiBoot.lua", "MultiBoot.lua")
-
 
   print("Download completed")
   if promptYN("Run at startup? (y/n)") then
@@ -63,6 +65,7 @@ end
 
 local bios = loadfile(".multiboot/bios.lua")
 
+_G._ = dofile(".multiboot/luadash.lua")
 dofile(".multiboot/pluggablefs.lua")
 dofile(".multiboot/symlink.lua")
 
