@@ -21,7 +21,7 @@ local function getMount(mounts, path)
     if last.path == "" or path == last.path or path:sub(1,#(last.path)+1) == last.path .. "/" then
       return {fs = last.fs, path = path:sub(#(last.path) + 1), mount = last.path}, initial
     else
-      return getMounts(initial, path)
+      return getMount(initial, path)
     end
   end
 end
