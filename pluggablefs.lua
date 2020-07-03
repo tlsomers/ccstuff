@@ -1,4 +1,11 @@
-local oldfs = _G.fs
+local function copyTable(a, b)
+  for i,v in pairs(a) do
+    b[i] = v
+  end
+  return b
+end
+
+local oldfs = copyTable(_G.fs, {})
 
 local fs = {}
 
@@ -147,4 +154,4 @@ fs.find = oldfs.find
 
 fs.complete = oldfs.complete
 
-_G.fs = fs
+copyTable(fs, _G.fs)
