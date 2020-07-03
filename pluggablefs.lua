@@ -26,6 +26,16 @@ local function getMount(mounts, path)
   end
 end
 
+local function getMountWith(mounts, path, func)
+  local mount, rest = getMount(mounts, path)
+  if (not mount) or mount.fs[func] then
+    return mount, rest
+  else
+    return getMountWith(rest, path, func)
+  end
+end
+
+
 local function fsWithMounts(mounts)
   local fs = {}
 
@@ -80,9 +90,45 @@ local function fsWithMounts(mounts)
     return oldfs.combine(a,b)
   end
 
-  fs.copy = oldfs.copy
+  function fs.copy (patha, pathb)
+    patha = clean(patha)
+    pathb = clean(pathb)
+    if fs.exists(pathb) then
+      error(pathb..": File exists")
+    elseif not fs.exists(patha) then
+      error(patha..": File does not exist")
+    elseif fs.isReadOnly(pathb) then
+      error(pathb..": File read only")
+    end
 
-  fs.move = oldfs.move
+    function innerCopy(patha, pathb)
+      if fs.isDir(patha) then
+        fs.makeDir(pathb)
+        for _, name in pairs(fs.list(patha)) do
+          innerCopy(fs.combine(patha, name), fs.combine(pathb, name))
+        end
+      else
+        local writeFile = fs.open(pathb, "w")
+        local readFile = fs.open(patha, "r")
+        writeFile.write(readFile.readAll())
+        writeFile.close()
+        readFile.close()
+      end
+    end
+
+    innerCopy(patha, pathb)
+  end
+
+  function fs.move(patha, pathb)
+    patha = clean(patha)
+    pathb = clean(pathb)
+    if fs.isReadOnly(patha) then
+      error(patha..": File read only")
+    end
+
+    fs.copy(patha, pathb)
+    fs.delete(patha)
+  end
 
   fs.find = oldfs.find
 
