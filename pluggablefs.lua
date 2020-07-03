@@ -23,6 +23,7 @@ local function getMount(mounts, path)
     else
       return getMounts(initial, path)
     end
+  end
 end
 
 local function fsWithMounts(mounts)
@@ -101,7 +102,7 @@ function fs.mount(path, mount)
   elseif fs.isReadOnly(path) then
     error("Cannot mount in read-only place")
   else
-    mounts[#mounts + 1] = {fs = mount, path = path}
+    allMounts[#allMounts + 1] = {fs = mount, path = path}
   end
 end
 
