@@ -19,6 +19,7 @@ function listOS()
       osses[#osses + 1] = fs.combine("dev", v)
     end
   end
+  return osses
 end
 
 local osses = listOS()
@@ -38,7 +39,7 @@ term.setCursorBlink(false)
 
 if choice == 0 then
   local name = fs.getName(fs.combine(read(), ""))
-  while name == ""c or fs.exists(fs.combine("dev", name)) do
+  while name == "" or fs.exists(fs.combine("dev", name)) do
     name = fs.getName(fs.combine(read(), ""))
   end
   fs.makeDir(fs.combine("dev", name))
@@ -49,7 +50,7 @@ end
 print("Mounting rom")
 local path = osses[choice]
 if not fs.exists(fs.combine(path,"rom")) then
-  fs.makeDir(path, "rom")
+  fs.makeDir(fs.combine(path, "rom"))
 end
 fs.symlink(fs.combine(path, "rom"), "rom")
 
