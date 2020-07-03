@@ -18,8 +18,8 @@ local function getMount(mounts, path)
   else
     local initial = _.initial(mounts)
     local last = _.last(mounts)
-    if last.path == "" or path == last.path or path:sub(1,#i+1) == last.path .. "/" then
-      return {fs = last.fs, path = path:sub(#i + 1), mount = last.path}, initial
+    if last.path == "" or path == last.path or path:sub(1,#(last.path)+1) == last.path .. "/" then
+      return {fs = last.fs, path = path:sub(#(last.path) + 1), mount = last.path}, initial
     else
       return getMounts(initial, path)
     end
