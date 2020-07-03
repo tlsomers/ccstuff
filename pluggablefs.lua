@@ -16,7 +16,7 @@ function fs.mount(path, mount)
     error("Cannot mountin read-only place")
   elseif getMount(path) then
     error("Cannot mount in mount")
-  end
+  else
     mounts[path] = mount
   end
 end
@@ -108,11 +108,11 @@ function fs.move(patha, pathb)
     end
   elseif mounta and not mountb then
     return moveOut(mounta, pathb, patha)
-  else if mountb and not mounta then
+  elseif mountb and not mounta then
     return moveIn(mountb, patha, pathb)
   else
     local temp = makeTemp()
-    return moveOut(mounta, temp, patha)
+    moveOut(mounta, temp, patha)
     return moveIn(mountb, temp, pathb)
   end
 end
@@ -138,7 +138,10 @@ function fs.copy (patha, pathb)
       outstream.close()
     end
     instream.close()
+  end
 end
+
+-- TODOs
 
 fs.find = oldfs.find
 
