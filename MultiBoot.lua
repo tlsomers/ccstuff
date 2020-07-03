@@ -119,7 +119,7 @@ end
 fs.symlink(fs.combine(path, "rom"), "rom")
 
 print("Loading virtual file system")
-fs.symlink("/", path)
+fs.symlink("/", path, true)
 
 print("Booting OS")
 bios()
