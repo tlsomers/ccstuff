@@ -37,7 +37,7 @@ if not fs.exists(".multiboot") then
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/pluggablefs.lua", ".multiboot/pluggablefs.lua")
 
   print("Downloading Symlink")
-  getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/symlink", ".multiboot/symlink.lua")
+  getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/symlink.lua", ".multiboot/symlink.lua")
 
   print("Downloading bios")
   getRawFile("https://raw.githubusercontent.com/SquidDev-CC/CC-Tweaked/7b2d4823879a6db77bb99fc2e8605e9e54a0d361/src/main/resources/data/computercraft/lua/bios.lua", ".multiboot/bios.lua")
