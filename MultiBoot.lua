@@ -83,46 +83,66 @@ function listOS()
   local osses = {}
   for _,v in pairs(dirs) do
     if fs.isDir(fs.combine("dev", v)) then
-      osses[#osses + 1] = fs.combine("dev", v)
+      osses[#osses + 1] = v
     end
   end
   return osses
 end
 
-local osses = listOS()
-
-print("0: new")
-for i,v in pairs(osses) do
-  print(tostring(i)..": "..fs.getName(v))
+function readOption(options)
+  for i,v in pairs(options) do
+    print(tostring(i) .. ": " .. tostring(v.name))
+  end
+  local _, y = term.getCursorPos()
+  while true do
+    term.setCursorPos(1, y)
+    term.write("> ")
+    local i = read()
+    if options[i] then
+      return options[i]
+    end
+  end
 end
 
-local choice = -1
-while choice < 0 or choice > #osses do
-  term.write("> ")
-  term.setCursorBlink(true)
-  choice = tonumber(read()) or choice
-end
-term.setCursorBlink(false)
+function loadOS(name)
+  print("Mounting rom")
 
-if choice == 0 then
+  local path = fs.combine("dev", name)
+
+  if not fs.exists(fs.combine(path,"rom")) then
+    fs.makeDir(fs.combine(path, "rom"))
+  end
+  fs.symlink(fs.combine(path, "rom"), "rom")
+
+  print("Loading virtual file system")
+  fs.symlink("/", path, true)
+
+  print("Booting OS")
+  bios()
+end
+
+function createBoot()
   local name = fs.getName(fs.combine(read(), ""))
   while name == "" or fs.exists(fs.combine("dev", name)) do
     name = fs.getName(fs.combine(read(), ""))
   end
   fs.makeDir(fs.combine("dev", name))
-  osses[#osses + 1] = fs.combine("dev", name)
-  choice = #osses
+  loadOS(name)
 end
 
-print("Mounting rom")
-local path = osses[choice]
-if not fs.exists(fs.combine(path,"rom")) then
-  fs.makeDir(fs.combine(path, "rom"))
+function update()
+  fs.delete(".multiboot")
+  print("Downloading MultiBoot Installer")
+  getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/MultiBoot.lua", "MultiBoot.lua")
+  dofile("MultiBoot.lua")
 end
-fs.symlink(fs.combine(path, "rom"), "rom")
 
-print("Loading virtual file system")
-fs.symlink("/", path, true)
+local options = setmetatable({}, {__index = _})
+options:push({name = "Update", func = update})
+options:push({name = "New Boot", func = createBoot})
 
-print("Booting OS")
-bios()
+for i,v in pairs(listOS()) do
+  options:push({name = v, func = function() loadOS(v) end})
+end
+
+readOption(options).func()
