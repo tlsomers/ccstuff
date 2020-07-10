@@ -25,15 +25,7 @@ function fs.symlink(location, target, impersonateRoot)
   inTarget("getName")
 
   function symfs.getDir(fs, path, ...)
-    if impersonateRoot then
-      if path == "" then
-        return ""
-      else
-        return fs.combine(path, "..")
-      end
-    else
-      return fs.getDir(fs.combine(target, path), ...)
-    end
+    return fs.getDir(fs.combine(location, path), ...)
   end
 
 
