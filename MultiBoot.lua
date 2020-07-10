@@ -96,10 +96,14 @@ function readOption(options)
   local _, y = term.getCursorPos()
   while true do
     term.setCursorPos(1, y)
+    term.clearLine()
     term.write("> ")
     local i = read()
+    local i2 = tonumber(i)
     if options[i] then
       return options[i]
+    elseif options[i2] then
+      return options[i2]
     end
   end
 end
