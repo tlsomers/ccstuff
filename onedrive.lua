@@ -9,42 +9,20 @@ local refreshtokenfile = ".onedrive.refresh_token"
 local http = setmetatable({}, {__index = http})
 
 --- Replace the native get/post with fakely 'non blocking' ones
+local oldget = http.get
+function http.get(url, headers, binary)
 
-function smartPullRequest(func)
   local result = nil
   local events = {}
 
-  while results == nil do
-    local event = {os.pullEvent()}
-    result = {func(unpack(event))}
-    if result.n == 0 then
-      result = nil
-      _.push(events, event)
-    end
-  end
+  parallel.waitForAny(function()
+    result = {oldget(url, headers, binary)}
+  end, function() while true do _.push(events, {os.pullEvent()}) end end)
 
   for _,v in pairs(events) do
     os.queueEvent(unpack(v))
   end
-
   return unpack(result)
-end
-
-
-function http.get(url, headers, binary)
-  local ok, err = http.request(url, nil, headers, binary)
-  if type(url) == "table" then url = url.url end
-  if ok then
-    return smartPullRequest(
-      function(event, param1, param2, param3)
-        if event == "http_success" and param1 == url then
-            return param2
-        elseif event == "http_failure" and param1 == url then
-            return nil, param2, param3
-        end
-      end)
-  end
-  return nil, err
 end
 
 function encodeOptions(options)
