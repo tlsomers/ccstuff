@@ -130,7 +130,7 @@ end
 
 function loadOneDrive()
   print("Mounting OneDrive")
-  if not fs.exist("onedrive") then fs.makeDir("onedrive") end
+  if not fs.exists("onedrive") then fs.makeDir("onedrive") end
 
   dofile(".multiboot/onedrive.lua")
 
