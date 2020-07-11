@@ -56,6 +56,23 @@ local function fsWithMounts(mounts)
     return inner
   end
 
+  function tryMountTransform(func, transform)
+    function inner (path, ...)
+      local mount, rest = getMount(mounts, path)
+      if mount then
+        local innerfs = fsWithMounts(rest)
+        if mount.fs[func] then
+          return transform(innerfs, mount, mount.fs[func](innerfs, mount.path, ...))
+        else
+          return fsWithMounts(rest)[func](path, ...)
+        end
+      else
+        return oldfs[func](path, ...)
+      end
+    end
+    return inner
+  end
+
   fs.list = tryMount("list")
 
   fs.getName = tryMount("getName")
@@ -130,7 +147,7 @@ local function fsWithMounts(mounts)
     fs.delete(patha)
   end
 
-  fs.find = oldfs.find
+  fs.find = tryMountTransform("find", function(fs, mount, list) return _.map(list, function(p) return fs.combine(mount.mount, p) end) end)
 
   fs.complete = oldfs.complete
 
