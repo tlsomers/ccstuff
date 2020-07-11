@@ -33,6 +33,10 @@ function fs.symlink(location, target, impersonateRoot)
   inTarget("getCapacity")
   inTarget("attributes")
 
+  function symfs.find(fs, name)
+    return _.map(fs.find(fs.combine(target, name)), function (p) fs.combine(location, p.sub(#target+1)) end)
+  end
+
   function symfs.copy(fs, a, b)
     return fs.copy(fs.combine(target, a), fs.combine(target, b))
   end
