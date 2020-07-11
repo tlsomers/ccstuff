@@ -1,5 +1,5 @@
 
-local base64 = require("base64")
+local base64 = dofile("/rom/modules/main/base64.lua")
 
 local appId = "14629d23-c110-4719-961c-e64aace2dfd5"
 local appRedirect = "https://login.microsoftonline.com/common/oauth2/nativeclient"
@@ -63,7 +63,7 @@ function http.getJSON(link, data, headers)
     local link = http.getString(link, data)
     local resp, err, errresp = http.get(link, headers)
     if not resp then
-        return false, err, textutils.unserialiseJSON(errresp.readAll())
+        return false, err
     else
         return textutils.unserialiseJSON(resp.readAll())
     end
