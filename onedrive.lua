@@ -36,9 +36,9 @@ function http.get(url, headers, binary)
   if ok then
     return smartPullRequest(
       function(event, param1, param2, param3)
-        if event == "http_success" and param1 == _url then
+        if event == "http_success" and param1 == url then
             return param2
-        elseif event == "http_failure" and param1 == _url then
+        elseif event == "http_failure" and param1 == url then
             return nil, param2, param3
         end
       end)
