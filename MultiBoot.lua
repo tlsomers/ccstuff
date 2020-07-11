@@ -46,7 +46,7 @@ if not fs.exists(".multiboot") then
   getRawFile("https://raw.githubusercontent.com/tmpim/luadash/master/library.lua", ".multiboot/luadash.lua")
 
   print("Downloading OneDrive fs")
-  getRawFile("https://raw.githubusercontent.com/tmpim/luadash/master/onedrive.lua", ".multiboot/onedrive.lua")
+  getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/onedrive.lua", ".multiboot/onedrive.lua")
 
   print("Downloading MultiBoot")
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/MultiBoot.lua", "MultiBoot.lua")
