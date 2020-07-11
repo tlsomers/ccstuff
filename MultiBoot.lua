@@ -45,6 +45,9 @@ if not fs.exists(".multiboot") then
   print("Downloading LuaDash")
   getRawFile("https://raw.githubusercontent.com/tmpim/luadash/master/library.lua", ".multiboot/luadash.lua")
 
+  print("Downloading OneDrive fs")
+  getRawFile("https://raw.githubusercontent.com/tmpim/luadash/master/onedrive.lua", ".multiboot/onedrive.lua")
+
   print("Downloading MultiBoot")
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/MultiBoot.lua", "MultiBoot.lua")
 
@@ -125,6 +128,23 @@ function loadOS(name)
   bios()
 end
 
+function loadOneDrive()
+  print("Mounting OneDrive")
+  if not fs.exist("onedrive") then fs.makeDir("onedrive") end
+
+  dofile(".multiboot/onedrive.lua")
+
+  print("Mounting rom")
+  if not fs.exists("onedrive/rom") then fs.makeDir("onedrive/rom") end
+  fs.symlink("onedrive/rom", "rom")
+
+  print("Loading virtual file system")
+  fs.symlink("/", "onedrive", true)
+
+  print("Booting OS")
+  bios()
+end
+
 function createBoot()
   local name = fs.getName(fs.combine(read(), ""))
   while name == "" or fs.exists(fs.combine("dev", name)) do
@@ -144,6 +164,7 @@ end
 local options = setmetatable({}, {__index = _})
 options:push({name = "Update", func = update})
 options:push({name = "New Boot", func = createBoot})
+options:push({name = "OneDrive", func = function() loadOneDrive() end})
 
 for i,v in pairs(listOS()) do
   options:push({name = v, func = function() loadOS(v) end})
