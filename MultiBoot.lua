@@ -164,7 +164,7 @@ end
 local options = setmetatable({}, {__index = _})
 options:push({name = "Update", func = update})
 options:push({name = "New Boot", func = createBoot})
-options:push({name = "OneDrive", func = function() loadOneDrive() end})
+options:push({name = "OneDrive", func = loadOneDrive})
 
 for i,v in pairs(listOS()) do
   options:push({name = v, func = function() loadOS(v) end})
