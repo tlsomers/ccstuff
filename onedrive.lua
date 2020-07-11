@@ -33,6 +33,7 @@ end
 
 function http.get(url, headers, binary)
   local ok, err = http.request(url, nil, headers, binary)
+  if type(url) == "table" then url = url.url end
   if ok then
     return smartPullRequest(
       function(event, param1, param2, param3)
