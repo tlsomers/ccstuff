@@ -1,0 +1,35 @@
+
+function fs.log(logFunction)
+
+  local logfs = {}
+
+  function inTarget(method)
+    logfs[method] = function(fs,...)
+      logFunction(method, {...})
+      return fs[method](...)
+    end
+  end
+
+  inTarget("list")
+  inTarget("getSize")
+  inTarget("exists")
+  inTarget("isDir")
+  inTarget("isReadOnly")
+  inTarget("makeDir")
+  inTarget("delete")
+  inTarget("open")
+  inTarget("getDrive")
+  inTarget("getFreeSpace")
+  inTarget("getName")
+  inTarget("getDir")
+  inTarget("isDriveRoot")
+  inTarget("getCapacity")
+  inTarget("attributes")
+  inTarget("find")
+  inTarget("copy")
+  inTarget("move")
+  inTarget("moveOut")
+  inTarget("moveIn")
+
+  fs.mount("", logfs)
+end
