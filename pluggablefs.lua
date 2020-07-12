@@ -146,7 +146,7 @@ local function fsWithMounts(mounts)
     local mounta, resta = getMountWith(mounts, patha, "move")
     local mountb, restb = getMountWith(mounts, patha, "move")
     if mounta.fs == mountb.fs then
-      local innerfs = fsWithMounts(rest)
+      local innerfs = fsWithMounts(resta)
       return mounta.fs["move"](innerfs, mounta.path, mountb.path)
     end
 
