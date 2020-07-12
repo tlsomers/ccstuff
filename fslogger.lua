@@ -33,3 +33,12 @@ function fs.log(logFunction)
 
   fs.mount("", logfs)
 end
+
+function fs.logFile(path)
+  function log(method, args)
+    local file = fs.open(path, "w")
+    file.writeLine("["..method.."] "..textutils.serialise(args))
+    file.close()
+  end
+  fs.log(log)
+end
