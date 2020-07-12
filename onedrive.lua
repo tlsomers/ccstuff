@@ -383,7 +383,7 @@ function onedrivefs.open(fs, path, mode)
           uploadFile(fs, path, tempfile)
         end
 
-        local oldclose = filer.close()
+        local oldclose = filer.close
         filer.close = function()
             oldclose()
             uploadFile(fs, path, tempfile)
