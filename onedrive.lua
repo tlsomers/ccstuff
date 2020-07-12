@@ -9,6 +9,7 @@ local refreshtokenfile = ".onedrive.refresh_token"
 local http = setmetatable({}, {__index = http})
 
 --- Replace the native get/post with fakely 'non blocking' ones
+--[[
 local oldget = http.get
 function http.get(url, headers, binary)
 
@@ -24,6 +25,8 @@ function http.get(url, headers, binary)
   end
   return unpack(result)
 end
+]]
+
 
 function encodeOptions(options)
     if type(options) == "string" then return options end
