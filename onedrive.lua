@@ -355,7 +355,14 @@ function onedrivefs.open(fs, path, mode)
     if mode == "a" or mode == "w" then
         -- Open and delete file on close
         local filer = fs.open(tempfile, mode)
-        local oldclose = filer.close
+
+        local oldflush = filer.flush
+        function filer.flush()
+          oldflush()
+          uploadFile(fs, path, tempfile)
+        end
+
+        local oldclose = filer.close()
         filer.close = function()
             oldclose()
             uploadFile(fs, path, tempfile)
