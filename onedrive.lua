@@ -136,7 +136,6 @@ local onedriveRequestCache = {}
 function clearCache()
     onedriveRequestCache = {}
 end
-
 function onedriveGetJSON(endpoint, data)
     if onedriveRequestCache[endpoint] then
         return unpack(onedriveRequestCache[endpoint])
@@ -215,7 +214,7 @@ onedrive.delete = onedriveDelete
 --- Start working on file system stuff
 -- Read only first
 
-function tempFile()
+function tempFile(fs)
     if not fs.exists(".tmp") then fs.makeDir(".tmp") end
     local time = os.time()
     while true do
@@ -338,7 +337,7 @@ function uploadFile(fs, foreignpath, localpath)
 end
 
 function onedrivefs.open(fs, path, mode)
-    local tempfile = tempFile()
+    local tempfile = tempFile(fs)
     if mode == "r" or mode == "a" then
         local endpoint = "/drive/special/approot:/" .. path .. ":/content"
         if path == "" then endpoint = "/drive/special/approot/content" end
