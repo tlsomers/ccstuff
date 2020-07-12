@@ -143,6 +143,14 @@ local function fsWithMounts(mounts)
       error(patha..": File read only")
     end
 
+    local mounta, resta = getMountWith(mounts, patha, "move")
+    local mountb, restb = getMountWith(mounts, patha, "move")
+    if mounta.fs == mountb.fs then
+      local innerfs = fsWithMounts(rest)
+      return mounta.fs["move"](innerfs, mounta.path, mountb.path)
+    end
+
+    -- Fallback?
     fs.copy(patha, pathb)
     fs.delete(patha)
   end
