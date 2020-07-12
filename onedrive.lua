@@ -271,7 +271,7 @@ function onedrivefs.isDir(_, path)
     if res then
         return res.folder ~= nil
     else
-        error(err)
+        return false
     end
 end
 
