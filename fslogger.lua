@@ -35,10 +35,10 @@ function fs.log(logFunction)
 end
 
 function fs.logFile(path)
+  local file = fs.open(path, "w")
   function log(fs, method, args)
-    local file = fs.open(path, "w")
     file.writeLine("["..method.."] "..textutils.serialise(args))
-    file.close()
+    file.flush()
   end
   fs.log(log)
 end
