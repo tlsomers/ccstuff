@@ -1,4 +1,26 @@
 
+--- The first method run in the guest fs environment
+local function bios()
+
+  --- Allow custom bios and rom override
+  if fs.exists("rom/bios.lua") then
+    --- Note, normal bios remains loaded, we do not (yet) unload the current bios.
+    os.run({}, "rom/bios.lua")
+  else
+    --- The normal bios is already loaded, just need to run shell
+    local sShell
+    if term.isColour() and settings.get("bios.use_multishell") then
+        sShell = "rom/programs/advanced/multishell.lua"
+    else
+        sShell = "rom/programs/shell.lua"
+    end
+    os.run({}, sShell)
+    os.run({}, "rom/programs/shutdown.lua")
+  end
+end
+
+
+
 function promptYN(text)
   term.write(text .. " (y/n)")
   while true do
@@ -39,9 +61,6 @@ if not fs.exists(".multiboot") then
   print("Downloading Symlink")
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/symlink.lua", ".multiboot/symlink.lua")
 
-  print("Downloading bios")
-  getRawFile("https://raw.githubusercontent.com/SquidDev-CC/CC-Tweaked/7b2d4823879a6db77bb99fc2e8605e9e54a0d361/src/main/resources/data/computercraft/lua/bios.lua", ".multiboot/bios.lua")
-
   print("Downloading LuaDash")
   getRawFile("https://raw.githubusercontent.com/tmpim/luadash/master/library.lua", ".multiboot/luadash.lua")
 
@@ -68,8 +87,6 @@ if not fs.exists(".multiboot") then
     return
   end
 end
-
-local bios = loadfile(".multiboot/bios.lua")
 
 _G._ = dofile(".multiboot/luadash.lua")
 dofile(".multiboot/pluggablefs.lua")
