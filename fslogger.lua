@@ -42,3 +42,19 @@ function fs.logFile(path)
   end
   fs.log(log)
 end
+
+function fs.screenLogger()
+  local width = 15
+  local w,h = term.getSize()
+  local logWindow = window.create(term.current(), w - width + 1, 1, width, h)
+  local mainWindow = window.create(term.current(), 1, 1, w - width, h)
+
+  function log(fs, method, args)
+    term.redirect(logWindow)
+    print("["..method.."] "..textutils.serialise(args))
+    term.redirect(mainWindow)
+  end
+
+  fs.log(log)
+  term.redirect(mainWindow)
+end
