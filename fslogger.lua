@@ -5,7 +5,7 @@ function fs.log(logFunction)
 
   function inTarget(method)
     logfs[method] = function(fs,...)
-      logFunction(method, {...})
+      logFunction(fs, method, {...})
       return fs[method](...)
     end
   end
@@ -35,7 +35,7 @@ function fs.log(logFunction)
 end
 
 function fs.logFile(path)
-  function log(method, args)
+  function log(fs, method, args)
     local file = fs.open(path, "w")
     file.writeLine("["..method.."] "..textutils.serialise(args))
     file.close()
