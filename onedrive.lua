@@ -424,7 +424,7 @@ function onedrivefs.move(fs, pa, pb)
   local endpoint = "/drive/special/approot:/" .. pa
   local parent = fs.getDir(pb)
   local name = fs.getName(pb)
-  local newInfo = {parentReference = {path = "/drive/special/approot:/" .. parent}, name = name}
+  local newInfo = {name = name}
   local res, err, errres = onedrive.patch(endpoint, newInfo)
   if not res then
     error(errres and errres.readAll() or err)
