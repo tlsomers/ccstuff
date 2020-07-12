@@ -187,6 +187,26 @@ function onedrivePut(endpoint, textData)
     return nil, err
 end
 
+function onedrivePatch(endpoint, jsonData)
+    local headers = _.clone(headers)
+    local textData = textutils.serialiseJSON(jsonData)
+    headers["Content-Type"] = "application/json"
+    headers["Content-Length"] = tostring(string.len(textData))
+    local _url = "https://graph.microsoft.com/v1.0" .. endpoint
+    local ok, err = http.request({url= _url, method = "PATCH", headers = headers, body = textData})
+    if ok then
+        while true do
+            local event, param1, param2, param3 = os.pullEvent()
+            if event == "http_success" and param1 == _url then
+                return param2
+            elseif event == "http_failure" and param1 == _url then
+                return nil, param2, param3
+            end
+        end
+    end
+    return nil, err
+end
+
 function onedriveDelete(endpoint)
     local _url = "https://graph.microsoft.com/v1.0" .. endpoint
     local ok, err = http.request({url= _url, method = "DELETE", headers = headers})
@@ -209,6 +229,7 @@ onedrive.putJSON = onedrivePutJSON
 onedrive.put = onedrivePut
 onedrive.getText = onedriveGetText
 onedrive.delete = onedriveDelete
+onedrive.patch = onedrivePatch
 
 
 --- Start working on file system stuff
@@ -399,6 +420,11 @@ function onedrivefs.find(fs, path)
     end
 end
 
+function onedrivefs.move(fs, pa, pb)
+  local endpoint = "/drive/special/approot:/" .. pa
+  local newInfo = {parentReference = {path = "/drive/special/approot:/" .. pb}}
+  onedrive.patch(endpoint, newInfo)
+end
 
 _G.onedrivefs = onedrivefs
 
