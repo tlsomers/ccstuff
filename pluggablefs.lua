@@ -13,7 +13,7 @@ end
 
 local function getMount(mounts, path)
   path = clean(path)
-  if #mounts == 0 then
+  if #mounts == 0 or path:sub(1,2) == ".." then
     return false
   else
     local initial = _.initial(mounts)
