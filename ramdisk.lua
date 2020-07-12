@@ -36,6 +36,7 @@ function File:openRead()
   function handle.readAll()
     local rest = self.content:sub(index)
     index = #self.content + 1
+    return rest
   end
 
   function handle.close()
@@ -69,6 +70,7 @@ function File:openAppend()
   end
 
   function handle.close()
+    handle.flush()
     function errorClosed() error("Closed handle") end
     handle.write =  errorClosed
     handle.writeLine = errorClosed
@@ -99,14 +101,15 @@ end
 local Directory = {isDir = true}
 
 function Directory.create(name)
-  return setmetatable({name = name}, {__index = Directory})
+  return setmetatable({name = name, children = {}}, {__index = Directory})
 end
 
 function Directory:list(path)
-  if path == "" or path == nil then
+  path = fs.combine(path or "", "")
+  if path == "" then
     return _.map(self.children, function(c) return c.name end)
   else
-    local first, rest = subpath:match("([^/]+)/(.*)")
+    local first, rest = path:match("([^/]+)/?(.*)")
 
     for _,v in pairs(self.children) do
       if v.name == first then
@@ -127,7 +130,7 @@ function Directory:exists(subpath)
   if subpath == "" then
     return true
   else
-    local first, rest = subpath:match("([^/]+)/(.*)")
+    local first, rest = subpath:match("([^/]+)/?(.*)")
     for _,v in pairs(self.children) do
       if v.name == first then
         if rest == "" then
@@ -143,22 +146,34 @@ function Directory:exists(subpath)
 end
 
 function Directory:makeDir(subpath)
-  subpath = fs.combine(subpath, "")
+  subpath = fs.combine(subpath or "", "")
   if subpath == "" then
     return self
   else
-    local first, rest = subpath:match("([^/]+)/(.*)")
-    local directory = Directory.create(first)
-    return directory:makeDir(rest)
+    local first, rest = subpath:match("([^/]+)/?(.*)")
+    local child = nil
+    for i,v in pairs(self.children) do
+      if v.name == first then
+        child = v
+      end
+    end
+    if not child then
+      child = Directory.create(first)
+      _.push(self.children, child)
+    end
+    if not child.isDir then
+      error("Not a directory")
+    end
+    return child:makeDir(rest)
   end
 end
 
 function Directory:delete(subpath)
-  subpath = fs.combine(subpath or "" "")
+  subpath = fs.combine(subpath or "", "")
   if subpath == "" then
     error("Cannot delete directory itself")
   else
-    local first, rest = subpath:match("([^/]+)/(.*)")
+    local first, rest = subpath:match("([^/]+)/?(.*)")
     if rest == "" then
       self.children = _.filter(self.children, function(c) return c.name ~= first end)
     else
@@ -173,11 +188,11 @@ function Directory:delete(subpath)
 end
 
 function Directory:getFile(subpath, create)
-  subpath = fs.combine(subpath or "" "")
+  subpath = fs.combine(subpath or "", "")
   if subpath == "" then
     error("Not a file")
   else
-    local first, rest = subpath:match("([^/]+)/(.*)")
+    local first, rest = subpath:match("([^/]+)/?(.*)")
     for _,v in pairs(self.children) do
       if v.name == first then
         if v.isDir then
@@ -199,12 +214,12 @@ function Directory:getFile(subpath, create)
   end
 end
 
-function Directory:get(subpath, create)
-  subpath = fs.combine(subpath or "" "")
+function Directory:get(subpath)
+  subpath = fs.combine(subpath or "", "")
   if subpath == "" then
     return self
   else
-    local first, rest = subpath:match("([^/]+)/(.*)")
+    local first, rest = subpath:match("([^/]+)/?(.*)")
     for _,v in pairs(self.children) do
       if v.name == first then
         if v.isDir then
@@ -228,9 +243,12 @@ function Directory:size()
   return 0
 end
 
+_G.ramdisk = nil
+
 function fs.ramdisk(location)
 
   local disk = Directory.create("ramdisk")
+  _G.ramdisk = disk
 
   local ramfs = {}
 
@@ -256,7 +274,7 @@ function fs.ramdisk(location)
   end
 
   function ramfs.isDir(fs, path)
-    return disk:get(path).isDir
+    return disk:exists(path) and disk:get(path).isDir
   end
 
   function ramfs.makeDir(fs, path)
@@ -290,7 +308,7 @@ function fs.ramdisk(location)
     }
   end
 
-  function symfs.find(fs, name)
+  function ramfs.find(fs, name)
     if disk:exists(name) then return {name} else return {} end
   end
 

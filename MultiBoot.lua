@@ -48,6 +48,9 @@ if not fs.exists(".multiboot") then
   print("Downloading OneDrive fs")
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/onedrive.lua", ".multiboot/onedrive.lua")
 
+  print("Downloading RamDisk")
+  getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/ramdisk.lua", ".multiboot/ramdisk.lua")
+
   print("Downloading MultiBoot")
   getRawFile("https://raw.githubusercontent.com/tlsomers/ccstuff/master/MultiBoot.lua", "MultiBoot.lua")
 
@@ -71,6 +74,7 @@ local bios = loadfile(".multiboot/bios.lua")
 _G._ = dofile(".multiboot/luadash.lua")
 dofile(".multiboot/pluggablefs.lua")
 dofile(".multiboot/symlink.lua")
+dofile(".multiboot/ramdisk.lua")
 
 term.clear()
 term.setCursorPos(1,1)
@@ -129,9 +133,13 @@ function loadOS(name)
 end
 
 function loadOneDrive()
+
+  print("Creating RamDisk")
+  if not fs.exists(".tmp") then fs.makeDir(".tmp") end
+  fs.ramdisk(".tmp")
+
   print("Mounting OneDrive")
   if not fs.exists("onedrive") then fs.makeDir("onedrive") end
-
   dofile(".multiboot/onedrive.lua")
 
   print("Mounting rom")
