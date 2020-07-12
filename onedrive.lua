@@ -359,7 +359,8 @@ end
 
 function onedrivefs.open(fs, path, mode)
     local tempfile = tempFile(fs)
-    if mode:sub(1,1) == "r" or mode:sub(1,1) == "a" then
+    mode = mode:sub(1,1)
+    if mode == "r" or mode == "a" then
         local endpoint = "/drive/special/approot:/" .. path .. ":/content"
         if path == "" then endpoint = "/drive/special/approot/content" end
         local res, err, errres = onedrive.getText(endpoint)
@@ -373,7 +374,7 @@ function onedrivefs.open(fs, path, mode)
         end
     end
 
-    if mode:sub(1,1) == "a" or mode:sub(1,1) == "w" then
+    if mode == "a" or mode == "w" then
         -- Open and delete file on close
         local filer = fs.open(tempfile, mode)
 
@@ -390,7 +391,7 @@ function onedrivefs.open(fs, path, mode)
             fs.delete(tempfile)
         end
         return filer
-    elseif mode:sub(1,1) == "r" then
+    elseif mode == "r" then
         -- Open and delete file on close
         local filer = fs.open(tempfile, mode)
         local oldclose = filer.close
