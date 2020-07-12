@@ -429,6 +429,7 @@ function onedrivefs.move(fs, pa, pb)
   if not res then
     error(errres and errres.readAll() or err)
   end
+  clearCache()
 end
 
 _G.onedrivefs = onedrivefs
