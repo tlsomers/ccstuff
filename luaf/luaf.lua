@@ -66,7 +66,7 @@ local filew = io.open(fileName..".lua", "w")
 
 local text = filer:read("*a")
 
-newLuaCode():run(text):map(function (tup) return tup[1] end)
+newLuaCode():run(text):map(function (tup) return filew:write(tup[1]) end)
 
 filer:close()
 filew:close()
