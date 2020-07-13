@@ -94,6 +94,8 @@ function loadPlugins()
   local fsopen = fs.open
   local fsexists = fs.exists
 
+  fs.makeDir(".multibootplugins/")
+
   function setupPlugin(name)
     local configuration = {}
     local pluginFile = ".multibootplugins/"..name
