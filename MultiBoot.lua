@@ -97,39 +97,43 @@ function loadPlugins()
   fs.makeDir(".multibootplugins/")
 
   function setupPlugin(name)
-    local configuration = {}
+    local allConfiguration = {}
     local pluginFile = ".multibootplugins/"..name
     local confFile = ".multibootplugins/"..(name:sub(1,-5))..".config"
     if fsexists(confFile) then
       local file = fsopen(confFile, "r")
-      configuration = textutils.unserialise(file.readAll())
-      file.close()
-    end
-
-    local config = {}
-    function config.get(key)
-      return configuration[key]
-    end
-
-    function config.getOrElse(key, default)
-      return configuration[key] or default
-    end
-
-    function config.set(key, value)
-      configuration[key] = value
-      local file = fsopen(confFile, "w")
-      file.write(textutils.serialise(configuration))
+      allConfiguration = textutils.unserialise(file.readAll())
       file.close()
     end
 
     return function(osconfig)
+      local config = {}
+      function config.get(key)
+        local configuration = allConfiguration[osconfig] or {}
+        return configuration[key]
+      end
+
+      function config.getOrElse(key, default)
+        local configuration = allConfiguration[osconfig] or {}
+        return configuration[key] or default
+      end
+
+      function config.set(key, value)
+        local configuration = allConfiguration[osconfig] or {}
+        configuration[key] = value
+        allConfiguration[osconfig] = configuration
+        local file = fsopen(confFile, "w")
+        file.write(textutils.serialise(allConfiguration))
+        file.close()
+      end
+
       os.run({config = config, osconfig = osconfig}, pluginFile)
     end
   end
 
   local plugins = {}
 
-  for _,v in pairs(fs.list(".multibootplugins")) do
+  for i,v in pairs(fs.list(".multibootplugins")) do
     if v:sub(-4) == ".lua" then
       _.push(plugins, setupPlugin(v))
     end
