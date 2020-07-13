@@ -88,7 +88,58 @@ if not fs.exists(".multiboot") then
   end
 end
 
+
+--Plugins? Why
+function loadPlugins()
+  local fsopen = fs.open
+  local fsexists = fs.exists
+
+  function setupPlugin(name)
+    local configuration = {}
+    local pluginFile = ".multibootplugins/"..name
+    local confFile = ".multibootplugins/"..(name:sub(1,-5))..".config"
+    if fsexists(confFile) then
+      local file = fsopen(confFile, "r")
+      configuration = textutils.unserialise(file.readAll())
+      file.close()
+    end
+
+    local config = {}
+    function config.get(key)
+      return configuration[key]
+    end
+
+    function config.getOrElse(key, default)
+      return configuration[key] or default
+    end
+
+    function config.set(key, value)
+      configuration[key] = value
+      local file = fsopen(confFile, "w")
+      file.write(textutils.serialise(configuration))
+      file.close()
+    end
+
+    return function(osconfig)
+      os.run({config = config, osconfig = osconfig}, pluginFile)
+    end
+  end
+
+  local plugins = {}
+
+  for _,v in pairs(fs.list(".multibootplugins")) do
+    if v:sub(-4) == ".lua" then
+      _.push(plugins, setupPlugin(v))
+    end
+  end
+
+  return plugins
+end
+
 _G._ = dofile(".multiboot/luadash.lua")
+
+local plugins = loadPlugins()
+
 dofile(".multiboot/pluggablefs.lua")
 dofile(".multiboot/symlink.lua")
 dofile(".multiboot/ramdisk.lua")
@@ -195,4 +246,6 @@ for i,v in pairs(listOS()) do
   options:push({name = v, func = function() loadOS(v) end})
 end
 
-readOption(options).func()
+local option = readOption(options)
+_.map(plugins, function(plugin) plugin(option.name) end)
+option.func()
