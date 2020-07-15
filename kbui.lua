@@ -73,7 +73,7 @@ function kbui.run()
   running = true
   while running do
     kbui.redraw()
-    local event = {os.pullEvent()
+    local event = {os.pullEvent()}
     kbui.handleEvent(event)
   end
 end
