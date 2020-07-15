@@ -104,6 +104,8 @@ function kbui.components.textCenter(y, text, textColor, bgColor)
     local pad = (width - #comp.text) / 2
     local fulltext = string.rep(" ", math.floor(pad)) .. comp.text .. string.ceil(" ", math.floor(pad))
     term.setCursorPos(comp.x, comp.y)
+    term.setTextColor(comp.textColor)
+    term.setBackgroundColor(comp.bgColor)
     term.write(fulltext)
   end
 
