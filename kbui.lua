@@ -82,4 +82,51 @@ function kbui.stop()
   running = false
 end
 
-return kbui
+--- UI elements
+
+kbui.components = {}
+
+function kbui.components.textCenter(y, text, textColor, bgColor)
+  local comp = {}
+  comp.y = y or 1
+  comp.text = text or "unknown"
+  comp.textColor = textColor or colors.white
+  comp.bgColor = bgColor or colors.white
+  comp.x = 1
+  comp.width = "term"
+
+  function comp.render()
+    local width = comp.width
+    if not width or width == "term" then
+      -- Fill up remaining space
+      width = term.getSize() - comp.x + 1
+    end
+    local pad = (width - #comp.text) / 2
+    local fulltext = string.rep(" ", math.floor(pad)) .. comp.text .. string.ceil(" ", math.floor(pad))
+    term.setCursorPos(comp.x, comp.y)
+    term.write(fulltext)
+  end
+
+  return comp
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+return kbui,
